@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Net Sheet Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      color: #333;
+    }
+    .calculator-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #0077cc;
+    }
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #0077cc;
+      border: none;
+      color: white;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator-container">
+    <h2>Seller Net Sheet Calculator</h2>
+    <label for="salePrice">Sale Price ($)</label>
+    <input type="number" id="salePrice" placeholder="Enter sale price" />
+
+    <label for="mortgage">Outstanding Mortgage ($)</label>
+    <input type="number" id="mortgage" placeholder="Enter current mortgage balance" />
+
+    <label for="listingCommission">Listing Agent Commission (%)</label>
+    <input type="number" id="listingCommission" placeholder="e.g. 3" />
+
+    <label for="buyerCommission">Buyer Agent Commission Offered (%) <span style="font-weight:normal">(optional)</span></label>
+    <input type="number" id="buyerCommission" placeholder="e.g. 3" />
+
+    <label for="closingCosts">Other Closing Costs ($)</label>
+    <input type="number" id="closingCosts" placeholder="e.g. 2000" />
+
+    <button onclick="calculateNet()">Calculate Net Proceeds</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculateNet() {
+      const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+      const mortgage = parseFloat(document.getElementById('mortgage').value) || 0;
+      const listingCommissionPercent = parseFloat(document.getElementById('listingCommission').value) || 0;
+      const buyerCommissionPercent = parseFloat(document.getElementById('buyerCommission').value) || 0;
+      const closingCosts = parseFloat(document.getElementById('closingCosts').value) || 0;
+
+      const totalCommission = salePrice * ((listingCommissionPercent + buyerCommissionPercent) / 100);
+      const netProceeds = salePrice - mortgage - totalCommission - closingCosts;
+
+      document.getElementById('result').innerText =
+        netProceeds >= 0
+          ? `Estimated Net Proceeds: $${netProceeds.toLocaleString()}`
+          : `Warning: Your costs exceed sale price.`;
+    }
+  </script>
+</body>
+</html>
