@@ -3,98 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Seller Net Sheet Calculator</title>
+  <title>GoldenUS Net Sheet Calculator</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
-      color: #333;
-    }
-    .calculator-container {
-      max-width: 500px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #222;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 15px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #0077cc;
-    }
-    button {
-      margin-top: 25px;
-      width: 100%;
-      padding: 12px;
-      background-color: #0077cc;
-      border: none;
-      color: white;
-      font-size: 1em;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005fa3;
-    }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; color: #333; }
+    header { background: #d4af37; padding: 20px; text-align: center; color: black; }
+    header img { max-height: 60px; background: white; padding: 6px 10px; border-radius: 8px; box-shadow: 0 0 4px rgba(0,0,0,0.2); margin-bottom: 10px; }
+    main { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+    .section { margin-bottom: 30px; }
+    label, .section h3 { font-weight: bold; }
+    input, select, button { width: 100%; padding: 12px; margin-top: 5px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+    .two-cols { display: flex; gap: 10px; }
+    .two-cols > div { flex: 1; }
+    .toggle-section { margin-top: 10px; }
+    .results { display: none; margin-top: 30px; background: #e7ffe7; padding: 20px; border-radius: 8px; border: 1px solid #c2e6c2; box-shadow: 0 0 10px rgba(0, 128, 0, 0.05); }
+    .cta-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .cta-buttons button, .cta-buttons a { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 6px; }
+    .cta-buttons button:hover, .cta-buttons a:hover { background-color: #388e3c; transition: background-color 0.3s ease; }
+    .disclaimer { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; }
   </style>
 </head>
 <body>
-  <div class="calculator-container">
-    <h2>Seller Net Sheet Calculator</h2>
-    <label for="salePrice">Sale Price ($)</label>
-    <input type="number" id="salePrice" placeholder="Enter sale price" />
+  <header>
+    <img src="https://i.ibb.co/k1YZWXn/golden-logo.png" alt="GoldenUS Logo">
+    <h1>GoldenUS Seller Net Sheet</h1>
+    <p>Smarter NYC Proceeds Calculator — Fast, Clear & Compliant</p>
+  </header>
+  <main>
+    <div class="section">
+      <h3>Property Details</h3>
+      <label>Sale Price ($)</label>
+      <input type="number" id="salePrice" />
+      <label>Property Type</label>
+      <select id="propertyType">
+        <option>Condo</option>
+        <option>Co-op</option>
+        <option>House</option>
+        <option>Apartment</option>
+      </select>
+    </div>
 
-    <label for="mortgage">Outstanding Mortgage ($)</label>
-    <input type="number" id="mortgage" placeholder="Enter current mortgage balance" />
+    <div class="section toggle-section">
+      <label><input type="checkbox" id="hasMortgage" onchange="toggleMortgage()"> I have a mortgage</label>
+      <div id="mortgageInputs" style="display: none;">
+        <label>Loan Payoff Amount ($)</label>
+        <input type="number" id="mortgageBalance" />
+      </div>
+    </div>
 
-    <label for="listingCommission">Listing Agent Commission (%)</label>
-    <input type="number" id="listingCommission" placeholder="e.g. 3" />
+    <div class="section two-cols">
+      <div>
+        <label>Listing Agent Commission (%)</label>
+        <input type="number" id="listingCommission" value="3" />
+      </div>
+      <div>
+        <label>Buyer Agent Commission (%)</label>
+        <input type="number" id="buyerCommission" value="3" />
+      </div>
+    </div>
 
-    <label for="buyerCommission">Buyer Agent Commission Offered (%) <span style="font-weight:normal">(optional)</span></label>
-    <input type="number" id="buyerCommission" placeholder="e.g. 3" />
+    <div class="section two-cols">
+      <div>
+        <label>Seller Concessions (%)</label>
+        <input type="number" id="sellerConcession" value="0" />
+      </div>
+      <div>
+        <label>Attorney Fee ($)</label>
+        <input type="number" id="attorneyFee" value="1200" />
+      </div>
+    </div>
 
-    <label for="closingCosts">Other Closing Costs ($)</label>
-    <input type="number" id="closingCosts" placeholder="e.g. 2000" />
+    <button onclick="calculate()">Calculate</button>
 
-    <button onclick="calculateNet()">Calculate Net Proceeds</button>
+    <div class="results" id="resultsBox">
+      <h3>Net Sheet Summary</h3>
+      <p><strong>Estimated Net Proceeds: <span id="netProceeds">$0</span></strong></p>
+      <ul>
+        <li>Mortgage Payoff: $<span id="costMortgage">0</span></li>
+        <li>Seller Concessions: $<span id="costConcessions">0</span></li>
+        <li>Listing Agent Commission: $<span id="costListing">0</span></li>
+        <li>Buyer Agent Commission: $<span id="costBuyer">0</span></li>
+        <li>Transfer Taxes (Est.): $<span id="costTransfer">0</span></li>
+        <li>Attorney Fee: $<span id="costAttorney">0</span></li>
+        <li id="coopFees" style="display: none;">Estimated Co-op Fees: $<span id="costCoop">0</span></li>
+      </ul>
 
-    <div class="result" id="result"></div>
-  </div>
+      <div class="cta-buttons">
+        <a href="mailto:info@goldenlocatornyc.us?subject=My Net Sheet Results" target="_blank">📧 Email Me The Results</a>
+        <button onclick="window.print()">💾 Export to PDF</button>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>DISCLAIMER:</strong> This tool provides ESTIMATES ONLY. All closing figures and taxes are subject to legal and financial review. Please consult a licensed professional.
+    </div>
+  </main>
 
   <script>
-    function calculateNet() {
-      const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
-      const mortgage = parseFloat(document.getElementById('mortgage').value) || 0;
-      const listingCommissionPercent = parseFloat(document.getElementById('listingCommission').value) || 0;
-      const buyerCommissionPercent = parseFloat(document.getElementById('buyerCommission').value) || 0;
-      const closingCosts = parseFloat(document.getElementById('closingCosts').value) || 0;
+    function toggleMortgage() {
+      const box = document.getElementById('mortgageInputs');
+      box.style.display = document.getElementById('hasMortgage').checked ? 'block' : 'none';
+    }
 
-      const totalCommission = salePrice * ((listingCommissionPercent + buyerCommissionPercent) / 100);
-      const netProceeds = salePrice - mortgage - totalCommission - closingCosts;
+    function calculate() {
+      const sale = parseFloat(document.getElementById('salePrice').value) || 0;
+      const type = document.getElementById('propertyType').value;
+      const mortgage = document.getElementById('hasMortgage').checked ? parseFloat(document.getElementById('mortgageBalance').value) || 0 : 0;
+      const concessions = sale * ((parseFloat(document.getElementById('sellerConcession').value) || 0) / 100);
+      const listing = sale * ((parseFloat(document.getElementById('listingCommission').value) || 0) / 100);
+      const buyer = sale * ((parseFloat(document.getElementById('buyerCommission').value) || 0) / 100);
+      const transfer = sale > 1000000 ? sale * 0.01925 : sale * 0.014;
+      const attorney = parseFloat(document.getElementById('attorneyFee').value) || 0;
+      let coop = 0;
 
-      document.getElementById('result').innerText =
-        netProceeds >= 0
-          ? `Estimated Net Proceeds: $${netProceeds.toLocaleString()}`
-          : `Warning: Your costs exceed sale price.`;
+      if (type === 'Co-op') {
+        coop = 2500 + 500 + 450 + 125;
+        document.getElementById('coopFees').style.display = 'list-item';
+        document.getElementById('costCoop').innerText = coop.toLocaleString(undefined, {minimumFractionDigits: 2});
+      } else {
+        document.getElementById('coopFees').style.display = 'none';
+      }
+
+      const deductions = mortgage + concessions + listing + buyer + transfer + attorney + coop;
+      const net = sale - deductions;
+
+      document.getElementById('costMortgage').innerText = mortgage.toLocaleString();
+      document.getElementById('costConcessions').innerText = concessions.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costListing').innerText = listing.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costBuyer').innerText = buyer.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costTransfer').innerText = transfer.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costAttorney').innerText = attorney.toLocaleString();
+
+      document.getElementById('netProceeds').innerText = `$${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+      document.getElementById('resultsBox').style.display = 'block';
     }
   </script>
 </body>
