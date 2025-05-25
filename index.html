@@ -132,10 +132,22 @@
       document.getElementById('costBuyer').innerText = buyer.toLocaleString(undefined, {minimumFractionDigits: 2});
       document.getElementById('costTransfer').innerText = transfer.toLocaleString(undefined, {minimumFractionDigits: 2});
       document.getElementById('costAttorney').innerText = attorney.toLocaleString();
-
       document.getElementById('netProceeds').innerText = `$${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
       document.getElementById('resultsBox').style.display = 'block';
+      resizeParentIframe();
     }
+
+    function resizeParentIframe() {
+      if (window.parent) {
+        window.parent.postMessage({
+          frameHeight: document.documentElement.scrollHeight
+        }, '*');
+      }
+    }
+
+    window.onload = resizeParentIframe;
+    window.onresize = resizeParentIframe;
   </script>
 </body>
 </html>
