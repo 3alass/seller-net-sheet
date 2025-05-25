@@ -1,84 +1,153 @@
-<!-- GoldenUSTools.com - Home Platform Upgrade Plan -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GoldenUS Tools | Smarter Real Estate Systems</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoldenUS Net Sheet Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; color: #333; }
-    header { background: #d4af37; padding: 20px; text-align: center; }
-    header h1 { margin: 0; font-size: 28px; }
-    header p { margin-top: 5px; font-size: 16px; }
-    nav { background: #fff; border-bottom: 1px solid #ddd; padding: 10px 20px; display: flex; justify-content: center; gap: 30px; }
-    nav a { text-decoration: none; color: #333; font-weight: bold; }
-    nav a:hover { color: #d4af37; }
-    .hero { padding: 40px 20px; text-align: center; background: #fff; }
-    .hero h2 { font-size: 24px; margin-bottom: 10px; }
-    .hero p { font-size: 16px; max-width: 600px; margin: auto; }
-    .section { padding: 40px 20px; background: #fff; margin-top: 20px; }
-    .section h3 { text-align: center; margin-bottom: 20px; }
-    .tools-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-    .tool-card { background: #f0f0f0; padding: 20px; border-radius: 10px; width: 300px; box-shadow: 0 0 6px rgba(0,0,0,0.05); }
-    .tool-card h4 { margin-top: 0; }
-    iframe { width: 100%; height: 1200px; border: none; border-radius: 8px; }
-    footer { text-align: center; padding: 20px; font-size: 13px; color: #666; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; color: #333; }
+    header { background: #d4af37; padding: 10px 15px; text-align: center; color: black; }
+    header h1 { margin: 5px 0; font-size: 22px; }
+    header p { margin: 0; font-size: 14px; }
+    main { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+    .section { margin-bottom: 30px; }
+    label, .section h3 { font-weight: bold; }
+    input, select, button { width: 100%; padding: 12px; margin-top: 5px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+    .two-cols { display: flex; gap: 10px; }
+    .two-cols > div { flex: 1; }
+    .toggle-section { margin-top: 10px; }
+    .results { display: none; margin-top: 30px; background: #e7ffe7; padding: 20px; border-radius: 8px; border: 1px solid #c2e6c2; box-shadow: 0 0 10px rgba(0, 128, 0, 0.05); }
+    .cta-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .cta-buttons button, .cta-buttons a { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 6px; }
+    .cta-buttons button:hover, .cta-buttons a:hover { background-color: #388e3c; transition: background-color 0.3s ease; }
+    .disclaimer { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; }
   </style>
 </head>
 <body>
   <header>
-    <h1>GoldenUS Tools</h1>
-    <p>Smarter Tools for Sellers, Buyers, Renters & Agents</p>
+    <h1>GoldenUS Seller Net Sheet</h1>
+    <p>Smarter NYC Proceeds Calculator — Fast, Clear & Compliant</p>
   </header>
+  <main>
+    <div class="section">
+      <h3>Property Details</h3>
+      <label>Sale Price ($)</label>
+      <input type="number" id="salePrice" />
+      <label>Property Type</label>
+      <select id="propertyType">
+        <option>Condo</option>
+        <option>Co-op</option>
+        <option>House</option>
+        <option>Apartment</option>
+      </select>
+    </div>
 
-  <nav>
-    <a href="#seller">Seller Tools</a>
-    <a href="#buyer">Buyer Tools</a>
-    <a href="#rental">Rental Tools</a>
-    <a href="#automation">Automate</a>
-  </nav>
-
-  <div class="hero">
-    <h2>Welcome to GoldenUS Tools</h2>
-    <p>This platform is built to help real estate professionals, sellers, and buyers simplify decisions and speed up results using calculators, automations, and data-driven solutions.</p>
-  </div>
-
-  <div class="section" id="seller">
-    <h3>📊 Seller Tools</h3>
-    <div class="tools-grid">
-      <div class="tool-card">
-        <h4>Seller Net Sheet</h4>
-        <p>Instantly calculate seller proceeds for any NYC property with real commission breakdown and closing costs.</p>
-        <a href="#net-sheet">🔗 Try It Below</a>
+    <div class="section toggle-section">
+      <label><input type="checkbox" id="hasMortgage" onchange="toggleMortgage()"> I have a mortgage</label>
+      <div id="mortgageInputs" style="display: none;">
+        <label>Loan Payoff Amount ($)</label>
+        <input type="number" id="mortgageBalance" />
       </div>
     </div>
-  </div>
 
-  <div class="section" id="net-sheet">
-    <h3>💰 Real-Time Seller Net Sheet Calculator</h3>
-    <iframe 
-      src="https://3alass.github.io/seller-net-sheet/" 
-      allowfullscreen 
-      loading="lazy">
-    </iframe>
-  </div>
+    <div class="section two-cols">
+      <div>
+        <label>Listing Agent Commission (%)</label>
+        <input type="number" id="listingCommission" value="3" />
+      </div>
+      <div>
+        <label>Buyer Agent Commission (%)</label>
+        <input type="number" id="buyerCommission" value="3" />
+      </div>
+    </div>
 
-  <div class="section" id="automation">
-    <h3>🤖 Automate Like System Trésor</h3>
-    <p style="max-width: 700px; margin: auto; text-align: center;">
-      GoldenUSTools will soon integrate automation engines like <strong>System Trésor</strong> to help agents and investors:
-      <ul style="max-width: 700px; margin: 20px auto;">
-        <li>Send daily emails to leads automatically</li>
-        <li>Track follow-ups from one smart dashboard</li>
-        <li>Capture seller or renter info with Google Sheets</li>
-        <li>Trigger emails + calculators instantly from a form</li>
+    <div class="section two-cols">
+      <div>
+        <label>Seller Concessions (%)</label>
+        <input type="number" id="sellerConcession" value="0" />
+      </div>
+      <div>
+        <label>Attorney Fee ($)</label>
+        <input type="number" id="attorneyFee" value="1200" />
+      </div>
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="results" id="resultsBox">
+      <h3>Net Sheet Summary</h3>
+      <p><strong>Estimated Net Proceeds: <span id="netProceeds">$0</span></strong></p>
+      <ul>
+        <li>Mortgage Payoff: $<span id="costMortgage">0</span></li>
+        <li>Seller Concessions: $<span id="costConcessions">0</span></li>
+        <li>Listing Agent Commission: $<span id="costListing">0</span></li>
+        <li>Buyer Agent Commission: $<span id="costBuyer">0</span></li>
+        <li>Transfer Taxes (Est.): $<span id="costTransfer">0</span></li>
+        <li>Attorney Fee: $<span id="costAttorney">0</span></li>
+        <li id="coopFees" style="display: none;">Estimated Co-op Fees: $<span id="costCoop">0</span></li>
       </ul>
-      <strong>This means:</strong> no more manual follow-ups. Tools that work while you sleep.
-    </p>
-  </div>
 
-  <footer>
-    &copy; 2024 GoldenUSTools | Powered by Alassane Drabo
-  </footer>
+      <div class="cta-buttons">
+        <a href="mailto:info@goldenlocatornyc.us?subject=My Net Sheet Results" target="_blank">📧 Email Me The Results</a>
+        <button onclick="window.print()">💾 Export to PDF</button>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>DISCLAIMER:</strong> This tool provides ESTIMATES ONLY. All closing figures and taxes are subject to legal and financial review. Please consult a licensed professional.
+    </div>
+  </main>
+
+  <script>
+    function toggleMortgage() {
+      const box = document.getElementById('mortgageInputs');
+      box.style.display = document.getElementById('hasMortgage').checked ? 'block' : 'none';
+    }
+
+    function calculate() {
+      const sale = parseFloat(document.getElementById('salePrice').value) || 0;
+      const type = document.getElementById('propertyType').value;
+      const mortgage = document.getElementById('hasMortgage').checked ? parseFloat(document.getElementById('mortgageBalance').value) || 0 : 0;
+      const concessions = sale * ((parseFloat(document.getElementById('sellerConcession').value) || 0) / 100);
+      const listing = sale * ((parseFloat(document.getElementById('listingCommission').value) || 0) / 100);
+      const buyer = sale * ((parseFloat(document.getElementById('buyerCommission').value) || 0) / 100);
+      const transfer = sale > 1000000 ? sale * 0.01925 : sale * 0.014;
+      const attorney = parseFloat(document.getElementById('attorneyFee').value) || 0;
+      let coop = 0;
+
+      if (type === 'Co-op') {
+        coop = 2500 + 500 + 450 + 125;
+        document.getElementById('coopFees').style.display = 'list-item';
+        document.getElementById('costCoop').innerText = coop.toLocaleString(undefined, {minimumFractionDigits: 2});
+      } else {
+        document.getElementById('coopFees').style.display = 'none';
+      }
+
+      const deductions = mortgage + concessions + listing + buyer + transfer + attorney + coop;
+      const net = sale - deductions;
+
+      document.getElementById('costMortgage').innerText = mortgage.toLocaleString();
+      document.getElementById('costConcessions').innerText = concessions.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costListing').innerText = listing.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costBuyer').innerText = buyer.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costTransfer').innerText = transfer.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById('costAttorney').innerText = attorney.toLocaleString();
+      document.getElementById('netProceeds').innerText = `$${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+      document.getElementById('resultsBox').style.display = 'block';
+      resizeParentIframe();
+    }
+
+    function resizeParentIframe() {
+      if (window.parent) {
+        window.parent.postMessage({
+          frameHeight: document.documentElement.scrollHeight
+        }, '*');
+      }
+    }
+
+    window.onload = resizeParentIframe;
+    window.onresize = resizeParentIframe;
+  </script>
 </body>
 </html>
