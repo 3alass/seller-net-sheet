@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,9 +19,23 @@
     .toggle-section { margin-top: 10px; }
     .results { display: none; margin-top: 30px; background: #e7ffe7; padding: 20px; border-radius: 8px; border: 1px solid #c2e6c2; box-shadow: 0 0 10px rgba(0, 128, 0, 0.05); }
     .cta-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .cta-buttons button, .cta-buttons a { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 6px; }
-    .cta-buttons button:hover, .cta-buttons a:hover { background-color: #388e3c; transition: background-color 0.3s ease; }
+    .cta-buttons button { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 6px; }
+    .cta-buttons button:hover { background-color: #388e3c; transition: background-color 0.3s ease; }
     .disclaimer { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; }
+    #emailPopup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -30%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 1000;
+      width: 90%;
+      max-width: 400px;
+    }
   </style>
 </head>
 <body>
@@ -41,7 +56,6 @@
         <option>Apartment</option>
       </select>
     </div>
-
     <div class="section toggle-section">
       <label><input type="checkbox" id="hasMortgage" onchange="toggleMortgage()"> I have a mortgage</label>
       <div id="mortgageInputs" style="display: none;">
@@ -49,7 +63,6 @@
         <input type="number" id="mortgageBalance" />
       </div>
     </div>
-
     <div class="section two-cols">
       <div>
         <label>Listing Agent Commission (%)</label>
@@ -60,7 +73,6 @@
         <input type="number" id="buyerCommission" value="3" />
       </div>
     </div>
-
     <div class="section two-cols">
       <div>
         <label>Seller Concessions (%)</label>
@@ -71,9 +83,7 @@
         <input type="number" id="attorneyFee" value="1200" />
       </div>
     </div>
-
     <button onclick="calculate()">Calculate</button>
-
     <div class="results" id="resultsBox">
       <h3>Net Sheet Summary</h3>
       <p><strong>Estimated Net Proceeds: <span id="netProceeds">$0</span></strong></p>
@@ -86,24 +96,27 @@
         <li>Attorney Fee: $<span id="costAttorney">0</span></li>
         <li id="coopFees" style="display: none;">Estimated Co-op Fees: $<span id="costCoop">0</span></li>
       </ul>
-
       <div class="cta-buttons">
-        <a href="mailto:info@goldenlocatornyc.us?subject=My Net Sheet Results" target="_blank">📧 Email Me The Results</a>
+        <button onclick="showEmailPopup()">📧 Email Me The Results</button>
         <button onclick="window.print()">💾 Export to PDF</button>
       </div>
     </div>
-
     <div class="disclaimer">
       <strong>DISCLAIMER:</strong> This tool provides ESTIMATES ONLY. All closing figures and taxes are subject to legal and financial review. Please consult a licensed professional.
     </div>
   </main>
 
+  <div id="emailPopup">
+    <h3>Send My Results by Email</h3>
+    <input type="text" id="userName" placeholder="Your Name"><br><br>
+    <input type="email" id="userEmail" placeholder="Your Email"><br><br>
+    <button onclick="sendEmail()">Send My Results</button>
+  </div>
+
   <script>
     function toggleMortgage() {
-      const box = document.getElementById('mortgageInputs');
-      box.style.display = document.getElementById('hasMortgage').checked ? 'block' : 'none';
+      document.getElementById('mortgageInputs').style.display = document.getElementById('hasMortgage').checked ? 'block' : 'none';
     }
-
     function calculate() {
       const sale = parseFloat(document.getElementById('salePrice').value) || 0;
       const type = document.getElementById('propertyType').value;
@@ -114,7 +127,6 @@
       const transfer = sale > 1000000 ? sale * 0.01925 : sale * 0.014;
       const attorney = parseFloat(document.getElementById('attorneyFee').value) || 0;
       let coop = 0;
-
       if (type === 'Co-op') {
         coop = 2500 + 500 + 450 + 125;
         document.getElementById('coopFees').style.display = 'list-item';
@@ -122,10 +134,8 @@
       } else {
         document.getElementById('coopFees').style.display = 'none';
       }
-
       const deductions = mortgage + concessions + listing + buyer + transfer + attorney + coop;
       const net = sale - deductions;
-
       document.getElementById('costMortgage').innerText = mortgage.toLocaleString();
       document.getElementById('costConcessions').innerText = concessions.toLocaleString(undefined, {minimumFractionDigits: 2});
       document.getElementById('costListing').innerText = listing.toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -133,21 +143,30 @@
       document.getElementById('costTransfer').innerText = transfer.toLocaleString(undefined, {minimumFractionDigits: 2});
       document.getElementById('costAttorney').innerText = attorney.toLocaleString();
       document.getElementById('netProceeds').innerText = `$${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-
       document.getElementById('resultsBox').style.display = 'block';
-      resizeParentIframe();
     }
-
-    function resizeParentIframe() {
-      if (window.parent) {
-        window.parent.postMessage({
-          frameHeight: document.documentElement.scrollHeight
-        }, '*');
+    function showEmailPopup() {
+      document.getElementById("emailPopup").style.display = "block";
+    }
+    function sendEmail() {
+      const name = document.getElementById("userName").value;
+      const email = document.getElementById("userEmail").value;
+      const result = document.getElementById("netProceeds").innerText;
+      if (!name || !email) {
+        alert("Please enter your name and email.");
+        return;
       }
-    }
+      const subject = encodeURIComponent("Your NYC Net Sheet Results");
+      const body = encodeURIComponent(`Hi ${name},
 
-    window.onload = resizeParentIframe;
-    window.onresize = resizeParentIframe;
+Here is your estimated Net Proceeds:
+${result}
+
+Thank you for using GoldenUS Tools.
+— Golden Locators NYC`);
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      document.getElementById("emailPopup").style.display = "none";
+    }
   </script>
 </body>
 </html>
