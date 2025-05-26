@@ -19,7 +19,7 @@
     .toggle-section { margin-top: 10px; }
     .results { display: none; margin-top: 30px; background: #e7ffe7; padding: 20px; border-radius: 8px; border: 1px solid #c2e6c2; box-shadow: 0 0 10px rgba(0, 128, 0, 0.05); }
     .cta-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .cta-buttons button { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; border-radius: 6px; }
+    .cta-buttons button { background: #4CAF50; color: white; border: none; font-weight: bold; text-align: center; padding: 12px 20px; border-radius: 6px; }
     .cta-buttons button:hover { background-color: #388e3c; transition: background-color 0.3s ease; }
     .disclaimer { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; }
     #emailPopup {
@@ -117,6 +117,7 @@
     function toggleMortgage() {
       document.getElementById('mortgageInputs').style.display = document.getElementById('hasMortgage').checked ? 'block' : 'none';
     }
+
     function calculate() {
       const sale = parseFloat(document.getElementById('salePrice').value) || 0;
       const type = document.getElementById('propertyType').value;
@@ -144,10 +145,17 @@
       document.getElementById('costAttorney').innerText = attorney.toLocaleString();
       document.getElementById('netProceeds').innerText = `$${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
       document.getElementById('resultsBox').style.display = 'block';
+      setTimeout(() => {
+        if (window.parent) {
+          window.parent.postMessage({ frameHeight: document.body.scrollHeight }, "*");
+        }
+      }, 200);
     }
+
     function showEmailPopup() {
       document.getElementById("emailPopup").style.display = "block";
     }
+
     function sendEmail() {
       const name = document.getElementById("userName").value;
       const email = document.getElementById("userEmail").value;
@@ -157,16 +165,16 @@
         return;
       }
       const subject = encodeURIComponent("Your NYC Net Sheet Results");
-      const body = encodeURIComponent(`Hi ${name},
-
-Here is your estimated Net Proceeds:
-${result}
-
-Thank you for using GoldenUS Tools.
-— Golden Locators NYC`);
+      const body = encodeURIComponent(`Hi ${name},\n\nHere is your estimated Net Proceeds:\n${result}\n\nThank you for using GoldenUS Tools.\n— Golden Locators NYC`);
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
       document.getElementById("emailPopup").style.display = "none";
     }
+
+    window.addEventListener("load", () => {
+      if (window.parent) {
+        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, "*");
+      }
+    });
   </script>
 </body>
 </html>
